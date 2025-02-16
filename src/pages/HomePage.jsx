@@ -1,0 +1,318 @@
+import { FiMapPin, FiDollarSign, FiHome, FiDroplet, FiMaximize, FiHeart, FiPhone } from "react-icons/fi";
+import { useState } from "react";
+import Newsletter from "../components/Newsletter";
+
+const properties = [
+  {
+    id: 1,
+    title: "Modern Apartment",
+    price: 450000,
+    location: "123 Luxury Lane, Beverly Hills, CA",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3",
+    beds: 3,
+    baths: 2,
+    sqft: 1200,
+    type: "featured",
+    discount: null,
+  },
+  {
+    id: 2,
+    title: "Luxury Villa",
+    price: 1200000,
+    location: "456 Elite Avenue, Miami, FL",
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3",
+    beds: 5,
+    baths: 4,
+    sqft: 3500,
+    type: "featured",
+    discount: null,
+  },
+  {
+    id: 3,
+    title: "Cozy House",
+    price: 350000,
+    location: "789 Comfort Street, Austin, TX",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3",
+    beds: 2,
+    baths: 2,
+    sqft: 1000,
+    type: "featured",
+    discount: null,
+  },
+  {
+    id: 4,
+    title: "Seaside Villa",
+    price: 890000,
+    location: "321 Ocean Drive, San Diego, CA",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3",
+    beds: 4,
+    baths: 3,
+    sqft: 2800,
+    type: "featured",
+    discount: null,
+  },
+  {
+    id: 5,
+    title: "Mountain View Cabin",
+    price: 275000,
+    location: "567 Pine Road, Denver, CO",
+    image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3",
+    beds: 2,
+    baths: 1,
+    sqft: 900,
+    type: "featured",
+    discount: null,
+  },
+  {
+    id: 6,
+    title: "Urban Penthouse",
+    price: 1500000,
+    location: "999 Sky Heights, New York, NY",
+    image: "https://images.unsplash.com/photo-1567496898669-ee935f5f647a?ixlib=rb-4.0.3",
+    beds: 3,
+    baths: 3,
+    sqft: 2000,
+    type: "featured",
+    discount: null,
+  },
+  {
+    id: 7,
+    title: "Beach House Special",
+    price: 749000,
+    originalPrice: 899000,
+    location: "101 Coastal Way, Malibu, CA",
+    image: "https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-4.0.3",
+    beds: 3,
+    baths: 2,
+    sqft: 1800,
+    type: "offer",
+    discount: 150000,
+  },
+  {
+    id: 8,
+    title: "Downtown Loft",
+    price: 399000,
+    originalPrice: 459000,
+    location: "202 City Center, Chicago, IL",
+    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3",
+    beds: 1,
+    baths: 1,
+    sqft: 950,
+    type: "offer",
+    discount: 60000,
+  },
+  {
+    id: 9,
+    title: "Garden Estate",
+    price: 879000,
+    originalPrice: 999000,
+    location: "303 Green Valley, Portland, OR",
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3",
+    beds: 4,
+    baths: 3,
+    sqft: 2500,
+    type: "offer",
+    discount: 120000,
+  }
+];
+
+const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
+  const [showContact, setShowContact] = useState(false);
+
+  return (
+    <div className="bg-dark-800 rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-300">
+      <div className="relative h-64 overflow-hidden">
+        <img
+          src={property.image}
+          alt={property.title}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+        />
+        <div className="absolute top-4 left-4 bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
+          For Sale
+        </div>
+        {property.discount && (
+          <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+            Save ${(property.discount / 1000).toFixed(0)}k
+          </div>
+        )}
+      </div>
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-xl font-bold text-white mb-2">{property.title}</h3>
+            <div className="flex items-center">
+              {property.discount ? (
+                <>
+                  <p className="text-primary-400 text-2xl font-bold">${(property.price / 1000).toFixed(0)}k</p>
+                  <p className="text-gray-400 text-lg line-through ml-2">${(property.originalPrice / 1000).toFixed(0)}k</p>
+                </>
+              ) : (
+                <p className="text-primary-400 text-2xl font-bold">${(property.price / 1000).toFixed(0)}k</p>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => onToggleFavorite(property.id)}
+              className={`p-2 rounded-full transition-colors duration-200 ${
+                isFavorite ? 'bg-red-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              <FiHeart className="text-xl" />
+            </button>
+            <button 
+              onClick={() => setShowContact(!showContact)}
+              className="p-2 rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-colors duration-200"
+            >
+              <FiPhone className="text-xl" />
+            </button>
+          </div>
+        </div>
+        {showContact && (
+          <div className="mb-4 p-3 bg-primary-500/10 rounded-lg">
+            <p className="text-white font-semibold">Agent Contact:</p>
+            <p className="text-primary-400">+1 (555) 123-4567</p>
+          </div>
+        )}
+        <p className="text-gray-400 mb-4">
+          <FiMapPin className="inline-block mr-2" />
+          {property.location}
+        </p>
+        <div className="flex justify-between text-gray-400 border-t border-gray-700 pt-4">
+          <span className="flex items-center">
+            <FiHome className="mr-2" /> {property.beds} Beds
+          </span>
+          <span className="flex items-center">
+            <FiDroplet className="mr-2" /> {property.baths} Baths
+          </span>
+          <span className="flex items-center">
+            <FiMaximize className="mr-2" /> {property.sqft} sqft
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function HomePage() {
+  const [favorites, setFavorites] = useState(new Set());
+
+  const toggleFavorite = (propertyId) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(propertyId)) {
+        newFavorites.delete(propertyId);
+      } else {
+        newFavorites.add(propertyId);
+      }
+      return newFavorites;
+    });
+  };
+
+  const featuredProperties = properties.filter(p => p.type === 'featured');
+  const bestOffers = properties.filter(p => p.type === 'offer');
+
+  return (
+    <div className="min-h-screen bg-dark-900">
+      {/* Hero Section */}
+      <div className="relative h-[600px] bg-hero-pattern bg-cover bg-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-900/50 via-dark-900/70 to-dark-900"></div>
+        <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+            Find Your Dream <span className="text-primary">Home</span>
+          </h1>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl">
+            Discover the perfect property from our extensive collection of homes, apartments, and luxury estates.
+          </p>
+          
+          {/* Search Form */}
+          <div className="bg-dark-800/80 backdrop-blur-md p-6 rounded-2xl shadow-lg max-w-4xl mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <label className="text-gray-300 text-sm">Location</label>
+                <div className="flex items-center bg-white/10 rounded-lg px-4 py-3">
+                  <FiMapPin className="text-primary-400 mr-2" />
+                  <input
+                    type="text"
+                    placeholder="Enter location"
+                    className="bg-transparent text-white placeholder-gray-400 focus:outline-none w-full"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-gray-300 text-sm">Price Range</label>
+                <div className="flex items-center bg-white/10 rounded-lg px-4 py-3">
+                  <FiDollarSign className="text-primary-400 mr-2" />
+                  <select className="bg-transparent text-white focus:outline-none w-full">
+                    <option value="">Any price</option>
+                    <option value="100000-300000">$100k - $300k</option>
+                    <option value="300000-500000">$300k - $500k</option>
+                    <option value="500000-1000000">$500k - $1M</option>
+                    <option value="1000000+">$1M+</option>
+                  </select>
+                </div>
+              </div>
+              <button className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mt-auto">
+                Search Properties
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Best Offers Section */}
+      <div className="-mt-32 relative z-10 pb-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-white">
+              Best Offers<span className="text-primary">.</span>
+            </h2>
+            <button className="text-primary hover:text-primary-dark transition-colors">
+              View All Properties →
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {bestOffers.map(property => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                isFavorite={favorites.has(property.id)}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Properties */}
+      <div className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-white">
+              Featured Properties<span className="text-primary">.</span>
+            </h2>
+            <button className="text-primary hover:text-primary-dark transition-colors">
+              View All Properties →
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuredProperties.map(property => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                isFavorite={favorites.has(property.id)}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Newsletter Section */}
+      <Newsletter />
+
+    </div>
+  );
+}
