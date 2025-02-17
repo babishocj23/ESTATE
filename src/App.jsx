@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
@@ -29,45 +29,43 @@ import PrivateRoute from "./components/PrivateRoute";
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/buy" element={<BuyPage />} />
-            <Route path="/rent" element={<RentPage />} />
-            <Route path="/sell" element={<SellPage />} />
-            <Route path="/find-agents" element={<FindAgentsPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify" element={<VerifyCodePage />} />
-            <Route path="/property/:id" element={<PropertyDetailsPage />} />
-            <Route path="/all-agents" element={<AllAgentsPage />} />
-          </Route>
+      <Routes>
+        {/* Public Routes */}
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="buy" element={<BuyPage />} />
+          <Route path="rent" element={<RentPage />} />
+          <Route path="sell" element={<SellPage />} />
+          <Route path="find-agents" element={<FindAgentsPage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="signin" element={<SignInPage />} />
+          <Route path="signup" element={<SignUpPage />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="verify" element={<VerifyCodePage />} />
+          <Route path="property/:id" element={<PropertyDetailsPage />} />
+          <Route path="all-agents" element={<AllAgentsPage />} />
+        </Route>
 
-          {/* Protected Dashboard Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <DashboardLayout />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<DashboardOverview />} />
-            <Route path="properties" element={<PropertyHub />} />
-            <Route path="leads" element={<LeadManager />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="reviews" element={<Reviews />} />
-            <Route path="messages" element={<Communications />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      </Router>
+        {/* Protected Dashboard Routes */}
+        <Route
+          path="dashboard"
+          element={
+            <PrivateRoute>
+              <DashboardLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<DashboardOverview />} />
+          <Route path="properties" element={<PropertyHub />} />
+          <Route path="leads" element={<LeadManager />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="reviews" element={<Reviews />} />
+          <Route path="messages" element={<Communications />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+      </Routes>
     </AuthProvider>
   );
 }

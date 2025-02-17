@@ -1,14 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
+import { 
+  createBrowserRouter, 
+  RouterProvider,
+  createRoutesFromElements,
+  Route 
+} from 'react-router-dom';
+import App from './App';
 import './index.css';
-import { Provider } from 'react-redux';
-import store from './store/store';
+
+// Enable future flags for React Router v7
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/*" element={<App />} />
+  ),
+  {
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplitPath: true
+    }
+  }
+);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

@@ -1,11 +1,17 @@
 export default {
   plugins: {
-    'tailwindcss/nesting': {},
+    'postcss-import': {},
+    'tailwindcss/nesting': 'postcss-nesting',
     'tailwindcss': {},
     'autoprefixer': {},
-    'postcss-import': {},
     'postcss-preset-env': {
-      features: { 'nesting-rules': false }
+      features: {
+        'nesting-rules': false,
+        'custom-properties': false,
+        'color-mod-function': { unresolved: 'warn' }
+      },
+      browsers: ['> 1%', 'last 2 versions', 'Firefox ESR', 'not dead'],
+      stage: 3
     }
   }
 } 

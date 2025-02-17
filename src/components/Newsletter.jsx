@@ -16,7 +16,7 @@ const Newsletter = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
-      <div className="bg-dark-800 rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
+      <div className="bg-dark-900/40 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
           <div>
             <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">

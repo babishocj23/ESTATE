@@ -7,7 +7,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const [showContact, setShowContact] = useState(false);
 
   return (
-    <div className="bg-dark-800 rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-300">
+    <div className="bg-dark-900/40 backdrop-blur-md rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 border border-primary/10">
       <div className="relative h-48 sm:h-64 overflow-hidden">
         <OptimizedImage
           src={property.image}
@@ -29,8 +29,8 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             e.stopPropagation();
             onToggleFavorite(property.id);
           }}
-          className={`absolute top-4 right-4 p-2 rounded-full transition-colors duration-200 ${
-            isFavorite ? 'bg-red-500 text-white' : 'bg-dark-900/80 text-gray-300 hover:bg-gray-600'
+          className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-colors duration-200 ${
+            isFavorite ? 'bg-red-500 text-white' : 'bg-dark-900/60 text-gray-300 hover:bg-dark-900/80'
           } active:scale-95 touch-manipulation`}
         >
           <FiHeart className="text-xl" />
@@ -64,7 +64,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           </button>
         </div>
         {showContact && (
-          <div className="mb-4 p-3 bg-primary-500/10 rounded-lg">
+          <div className="mb-4 p-3 bg-primary/10 backdrop-blur-sm rounded-lg border border-primary/20">
             <p className="text-white font-semibold">Agent Contact:</p>
             <p className="text-primary-400">+1 (555) 123-4567</p>
           </div>
@@ -73,7 +73,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           <FiMapPin className="flex-shrink-0" />
           <span className="line-clamp-1">{property.location}</span>
         </p>
-        <div className="grid grid-cols-3 gap-2 text-gray-400 border-t border-gray-700 pt-4 text-sm sm:text-base">
+        <div className="grid grid-cols-3 gap-2 text-gray-300 border-t border-primary/10 pt-4 text-sm sm:text-base">
           <div className="flex items-center gap-2">
             <FiHome className="flex-shrink-0" />
             <span>{property.beds} Beds</span>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiSearch, FiMapPin, FiDollarSign, FiHome, FiDroplet, FiMaximize, FiFilter, FiHeart, FiPhone } from 'react-icons/fi';
+import { FiSearch, FiMapPin, FiDollarSign, FiHome, FiDroplet, FiMaximize, FiFilter, FiHeart, FiPhone, FiArrowRight } from 'react-icons/fi';
 import { properties } from '../data/properties';
 import { useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
@@ -59,24 +59,30 @@ export default function BuyPage() {
     <div className="min-h-screen bg-dark-900">
       <div className="relative">
         {/* Hero Section */}
-        <Hero 
-          title="Find Your Dream Home"
-          subtitle="Discover exceptional properties in prime locations"
-          backgroundImage="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&q=85&w=1920&h=1080&fit=crop&auto=format"
-          size="small"
-          priority={true}
-        />
+        <div className="relative h-[600px] bg-hero-pattern bg-cover bg-center">
+          <div className="absolute inset-0 bg-gradient-to-b from-dark-900/50 via-dark-900/70 to-dark-900"></div>
+          <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-end pb-48">
+            <div className="max-w-4xl mx-auto text-center w-full">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+                Find Your Perfect <span className="text-primary">Home</span>
+              </h1>
+              <p className="text-xl text-gray-300 mb-4">
+                Find the perfect place to call home.
+              </p>
+            </div>
+          </div>
+        </div>
 
-        {/* Search Section - Moved outside Hero */}
+        {/* Search Section */}
         <div className="max-w-7xl mx-auto -mt-32 px-4 relative z-10">
-          <div className="bg-dark-800/90 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+          <div className="bg-dark-900/40 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-primary/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="relative">
                 <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search location..."
-                  className="w-full pl-10 pr-4 py-3 bg-dark-700 rounded-xl focus:ring-2 focus:ring-primary text-white"
+                  className="search-input"
                   value={filters.location}
                   onChange={handleFilterChange}
                   name="location"
@@ -85,7 +91,7 @@ export default function BuyPage() {
               <div className="relative">
                 <FiDollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <select
-                  className="w-full pl-10 pr-4 py-3 bg-dark-700 rounded-xl focus:ring-2 focus:ring-primary text-white appearance-none"
+                  className="search-select"
                   value={filters.priceRange}
                   onChange={handleFilterChange}
                   name="priceRange"
@@ -99,7 +105,7 @@ export default function BuyPage() {
               <div className="relative">
                 <FiHome className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <select
-                  className="w-full pl-10 pr-4 py-3 bg-dark-700 rounded-xl focus:ring-2 focus:ring-primary text-white appearance-none"
+                  className="search-select"
                   value={filters.propertyType}
                   onChange={handleFilterChange}
                   name="propertyType"
@@ -117,7 +123,7 @@ export default function BuyPage() {
               <div className="relative">
                 <FiHome className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <select
-                  className="w-full pl-10 pr-4 py-3 bg-dark-700 rounded-xl focus:ring-2 focus:ring-primary text-white appearance-none"
+                  className="search-select"
                   value={filters.beds}
                   onChange={handleFilterChange}
                   name="beds"
@@ -132,7 +138,7 @@ export default function BuyPage() {
               <div className="relative">
                 <FiDroplet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <select
-                  className="w-full pl-10 pr-4 py-3 bg-dark-700 rounded-xl focus:ring-2 focus:ring-primary text-white appearance-none"
+                  className="search-select"
                   value={filters.baths}
                   onChange={handleFilterChange}
                   name="baths"
@@ -154,26 +160,28 @@ export default function BuyPage() {
 
         {/* Properties Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-white">
-              Properties for Sale<span className="text-primary">.</span>
-            </h2>
-            <button 
-              onClick={() => navigate('/buy')}
-              className="text-primary hover:text-primary-dark transition-colors"
-            >
-              View All Properties →
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filteredProperties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                isFavorite={favorites.has(property.id)}
-                onToggleFavorite={toggleFavorite}
-              />
-            ))}
+          <div className="bg-dark-900/40 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-white">
+                Properties for Sale<span className="text-primary">.</span>
+              </h2>
+              <button 
+                onClick={() => navigate('/buy')}
+                className="text-primary hover:text-primary-dark transition-colors"
+              >
+                View All Properties →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {filteredProperties.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                  isFavorite={favorites.has(property.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -188,8 +196,8 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const [showContact, setShowContact] = useState(false);
 
   return (
-    <div className="bg-dark-800 rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-300">
-      <div className="relative h-64 overflow-hidden">
+    <div className="bg-dark-900/40 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
+      <div className="relative h-64 overflow-hidden rounded-2xl">
         <OptimizedImage
           src={property.image}
           alt={property.title}

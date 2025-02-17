@@ -1,6 +1,7 @@
 import { FiMapPin, FiDollarSign, FiHome, FiDroplet, FiMaximize, FiHeart, FiPhone } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Newsletter from "../components/Newsletter";
+import { useNavigate } from "react-router-dom";
 
 const properties = [
   {
@@ -120,8 +121,8 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const [showContact, setShowContact] = useState(false);
 
   return (
-    <div className="bg-dark-800 rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-300">
-      <div className="relative h-64 overflow-hidden">
+    <div className="bg-dark-900/40 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
+      <div className="relative h-64 overflow-hidden rounded-2xl">
         <img
           src={property.image}
           alt={property.title}
@@ -195,7 +196,52 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
 };
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState(new Set());
+  const [searchParams, setSearchParams] = useState({
+    location: '',
+    propertyType: '',
+    priceRange: '',
+    beds: ''
+  });
+  const [filteredProperties, setFilteredProperties] = useState([]);
+
+  const handleSearchChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSearch = () => {
+    let results = [...properties];
+
+    if (searchParams.location) {
+      results = results.filter(property => 
+        property.location.toLowerCase().includes(searchParams.location.toLowerCase())
+      );
+    }
+
+    if (searchParams.priceRange) {
+      const [min, max] = searchParams.priceRange.split('-').map(Number);
+      results = results.filter(property => {
+        if (max) {
+          return property.price >= min && property.price <= max;
+        }
+        return property.price >= min;
+      });
+    }
+
+    if (searchParams.beds) {
+      const minBeds = parseInt(searchParams.beds);
+      results = results.filter(property => property.beds >= minBeds);
+    }
+
+    setFilteredProperties(results);
+    // Scroll to featured properties section
+    document.getElementById('featured-properties')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const toggleFavorite = (propertyId) => {
     setFavorites(prev => {
@@ -209,7 +255,7 @@ export default function HomePage() {
     });
   };
 
-  const featuredProperties = properties.filter(p => p.type === 'featured');
+  const featuredProperties = (filteredProperties.length > 0 ? filteredProperties : properties).filter(p => p.type === 'featured');
   const bestOffers = properties.filter(p => p.type === 'offer');
 
   return (
@@ -217,44 +263,72 @@ export default function HomePage() {
       {/* Hero Section */}
       <div className="relative h-[600px] bg-hero-pattern bg-cover bg-center">
         <div className="absolute inset-0 bg-gradient-to-b from-dark-900/50 via-dark-900/70 to-dark-900"></div>
-        <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-center">
+        <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-center items-center text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
             Find Your Dream <span className="text-primary">Home</span>
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl">
-            Discover the perfect property from our extensive collection of homes, apartments, and luxury estates.
+            Your journey to the perfect property starts here.
           </p>
           
           {/* Search Form */}
-          <div className="bg-dark-800/80 backdrop-blur-md p-6 rounded-2xl shadow-lg max-w-4xl mb-16">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <label className="text-gray-300 text-sm">Location</label>
-                <div className="flex items-center bg-white/10 rounded-lg px-4 py-3">
-                  <FiMapPin className="text-primary-400 mr-2" />
+          <div className="bg-dark-900/40 backdrop-blur-lg p-6 rounded-3xl shadow-2xl border border-white/5 w-full max-w-4xl hover:shadow-primary/5 transition-all duration-300">
+            <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-end">
+              <div className="relative md:col-span-3">
+                <div className="relative">
+                  <FiMapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary" />
                   <input
                     type="text"
+                    name="location"
+                    value={searchParams.location}
+                    onChange={handleSearchChange}
                     placeholder="Enter location"
-                    className="bg-transparent text-white placeholder-gray-400 focus:outline-none w-full"
+                    className="w-full pl-12 pr-4 py-3 bg-dark-800/50 backdrop-blur-md border border-white/5 rounded-xl focus:ring-2 focus:ring-primary text-white placeholder-gray-400 hover:border-primary/20 transition-colors"
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-gray-300 text-sm">Price Range</label>
-                <div className="flex items-center bg-white/10 rounded-lg px-4 py-3">
-                  <FiDollarSign className="text-primary-400 mr-2" />
-                  <select className="bg-transparent text-white focus:outline-none w-full">
-                    <option value="">Any price</option>
-                    <option value="100000-300000">$100k - $300k</option>
-                    <option value="300000-500000">$300k - $500k</option>
-                    <option value="500000-1000000">$500k - $1M</option>
-                    <option value="1000000+">$1M+</option>
+              <div className="relative md:col-span-3">
+                <div className="relative">
+                  <FiHome className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary" />
+                  <select
+                    name="propertyType"
+                    value={searchParams.propertyType}
+                    onChange={handleSearchChange}
+                    className="w-full pl-12 pr-4 py-3 bg-dark-800/50 backdrop-blur-md border border-white/5 rounded-xl focus:ring-2 focus:ring-primary text-white placeholder-gray-400 hover:border-primary/20 transition-colors appearance-none"
+                  >
+                    <option value="">Property Type</option>
+                    <option value="house">House</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="villa">Villa</option>
+                    <option value="penthouse">Penthouse</option>
                   </select>
                 </div>
               </div>
-              <button className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mt-auto">
-                Search Properties
-              </button>
+              <div className="relative md:col-span-3">
+                <div className="relative">
+                  <FiDollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary" />
+                  <select
+                    name="priceRange"
+                    value={searchParams.priceRange}
+                    onChange={handleSearchChange}
+                    className="w-full pl-12 pr-4 py-3 bg-dark-800/50 backdrop-blur-md border border-white/5 rounded-xl focus:ring-2 focus:ring-primary text-white placeholder-gray-400 hover:border-primary/20 transition-colors appearance-none"
+                  >
+                    <option value="">Price Range</option>
+                    <option value="100000-300000">$100k - $300k</option>
+                    <option value="300000-500000">$300k - $500k</option>
+                    <option value="500000-1000000">$500k - $1M</option>
+                    <option value="1000000">$1M+</option>
+                  </select>
+                </div>
+              </div>
+              <div className="relative md:col-span-2">
+                <button
+                  onClick={handleSearch}
+                  className="w-full py-3 px-8 bg-primary hover:bg-primary-600 text-white rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+                >
+                  Search
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -286,33 +360,45 @@ export default function HomePage() {
       </div>
 
       {/* Featured Properties */}
-      <div className="py-16">
+      <div id="featured-properties" className="py-16 scroll-mt-16">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-white">
-              Featured Properties<span className="text-primary">.</span>
-            </h2>
-            <button className="text-primary hover:text-primary-dark transition-colors">
-              View All Properties →
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredProperties.map(property => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                isFavorite={favorites.has(property.id)}
-                onToggleFavorite={toggleFavorite}
-              />
-            ))}
+          <div className="bg-dark-900/40 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-white">
+                {filteredProperties.length > 0 ? 'Search Results' : 'Featured Properties'}<span className="text-primary">.</span>
+              </h2>
+              {filteredProperties.length > 0 && (
+                <button 
+                  onClick={() => setFilteredProperties([])} 
+                  className="text-primary hover:text-primary-dark transition-colors"
+                >
+                  Clear Search
+                </button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredProperties.map(property => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                  isFavorite={favorites.has(property.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+            
+            {filteredProperties.length === 0 && featuredProperties.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-400">No properties found matching your search criteria.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Newsletter Section */}
       <Newsletter />
-
     </div>
   );
 }

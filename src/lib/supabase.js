@@ -3,6 +3,10 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables')
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
@@ -70,6 +74,28 @@ export const getPropertyById = async (id) => {
       *,
       owner:owner_id(*)
     `)
+    .eq('id', id)
+    .single()
+  return { data, error }
+}
+
+// Add the agents functions after the properties functions
+export const getAgents = async (filters = {}) => {
+  let query = supabase
+    .from('agents')
+    .select('*')
+  
+  if (filters.location) query = query.ilike('location', `%${filters.location}%`)
+  if (filters.specialty) query = query.contains('specialties', [filters.specialty])
+  
+  const { data, error } = await query
+  return { data, error }
+}
+
+export const getAgentById = async (id) => {
+  const { data, error } = await supabase
+    .from('agents')
+    .select('*')
     .eq('id', id)
     .single()
   return { data, error }
