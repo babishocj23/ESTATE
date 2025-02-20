@@ -1,29 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { 
-  createBrowserRouter, 
-  RouterProvider,
-  createRoutesFromElements,
-  Route 
-} from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import './index.css';
 
-// Enable future flags for React Router v7
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path="/*" element={<App />} />
-  ),
-  {
-    future: {
+// Import styles in correct order
+import './index.css';
+import './styles/mobile.css';
+
+// Configure React Router future flags
+const router = (
+  <BrowserRouter
+    future={{
       v7_startTransition: true,
-      v7_relativeSplitPath: true
-    }
-  }
+      v7_relativeSplatPath: true
+    }}
+  >
+    <App />
+  </BrowserRouter>
 );
 
+// Create root and render app with strict mode and router
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    {router}
   </React.StrictMode>
 );

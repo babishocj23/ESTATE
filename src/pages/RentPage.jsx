@@ -1,22 +1,23 @@
-import { useState } from 'react';
-import { FiSearch, FiMapPin, FiDollarSign, FiHome, FiDroplet, FiMaximize, FiFilter, FiHeart, FiPhone, FiArrowRight } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Hero from '../components/Hero';
 import Newsletter from '../components/Newsletter';
-import OptimizedImage from '../components/OptimizedImage';
-import { imageSizes } from '../utils/imageOptimizer';
+import PropertyCard from '../components/properties/PropertyCard';
+import { PropertySearch } from '../features/properties/components/PropertySearch';
+import { usePropertySearch } from '../features/properties/hooks/usePropertySearch';
 
 export default function RentPage() {
   const navigate = useNavigate();
-  const [filters, setFilters] = useState({
-    location: '',
-    priceRange: '',
-    propertyType: '',
-    beds: '',
-    baths: '',
-  });
   const [favorites, setFavorites] = useState(new Set());
-  const [showFilters, setShowFilters] = useState(false);
+  const {
+    searchResults,
+    setSearchResults,
+    isSearching,
+    filters,
+    handleFilterChange,
+    handleSearch,
+    clearSearch,
+    getFilteredProperties
+  } = usePropertySearch('rent');
 
   const toggleFavorite = (propertyId) => {
     setFavorites(prev => {
@@ -30,14 +31,6 @@ export default function RentPage() {
     });
   };
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
   const rentalProperties = [
     {
       id: 101,
@@ -48,7 +41,8 @@ export default function RentPage() {
       beds: 1,
       baths: 1,
       sqft: 650,
-      type: "apartment"
+      type: "rent",
+      propertyType: "apartment"
     },
     {
       id: 102,
@@ -59,7 +53,8 @@ export default function RentPage() {
       beds: 2,
       baths: 2,
       sqft: 1200,
-      type: "apartment"
+      type: "rent",
+      propertyType: "apartment"
     },
     {
       id: 103,
@@ -70,7 +65,8 @@ export default function RentPage() {
       beds: 3,
       baths: 2,
       sqft: 1800,
-      type: "house"
+      type: "rent",
+      propertyType: "house"
     },
     {
       id: 104,
@@ -81,7 +77,8 @@ export default function RentPage() {
       beds: 3,
       baths: 3,
       sqft: 2200,
-      type: "apartment"
+      type: "rent",
+      propertyType: "penthouse"
     },
     {
       id: 105,
@@ -92,7 +89,8 @@ export default function RentPage() {
       beds: 2,
       baths: 2,
       sqft: 1400,
-      type: "condo"
+      type: "rent",
+      propertyType: "condo"
     },
     {
       id: 106,
@@ -103,7 +101,8 @@ export default function RentPage() {
       beds: 1,
       baths: 1,
       sqft: 950,
-      type: "apartment"
+      type: "rent",
+      propertyType: "apartment"
     },
     {
       id: 107,
@@ -114,7 +113,8 @@ export default function RentPage() {
       beds: 4,
       baths: 3,
       sqft: 2800,
-      type: "house"
+      type: "rent",
+      propertyType: "house"
     },
     {
       id: 108,
@@ -125,7 +125,8 @@ export default function RentPage() {
       beds: 5,
       baths: 4,
       sqft: 3500,
-      type: "house"
+      type: "rent",
+      propertyType: "villa"
     },
     {
       id: 109,
@@ -136,25 +137,35 @@ export default function RentPage() {
       beds: 1,
       baths: 1,
       sqft: 600,
-      type: "apartment"
+      type: "rent",
+      propertyType: "studio"
     }
   ];
-
-  const filteredProperties = rentalProperties.filter(property => {
-    if (filters.location && !property.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
-    if (filters.priceRange) {
-      const [min, max] = filters.priceRange.split('-').map(Number);
-      if (property.price < min || property.price > max) return false;
-    }
-    if (filters.beds && property.beds < parseInt(filters.beds)) return false;
-    if (filters.baths && property.baths < parseInt(filters.baths)) return false;
-    if (filters.propertyType && property.type !== filters.propertyType) return false;
-    return true;
-  });
 
   const handlePropertyClick = (propertyId) => {
     navigate(`/property/${propertyId}`);
   };
+
+  // Automatically search when filters change
+  const handleFilterAndSearch = (e) => {
+    handleFilterChange(e);
+    // Use setTimeout to ensure state is updated before search
+    setTimeout(() => handleSearch(rentalProperties), 0);
+  };
+
+  // Handle reset to show all properties immediately
+  const handleReset = () => {
+    clearSearch();
+    // Show all properties sorted by price
+    const sortedProperties = [...rentalProperties].sort((a, b) => a.price - b.price);
+    setSearchResults(sortedProperties);
+  };
+
+  // Initial sort on component mount
+  useEffect(() => {
+    const sortedProperties = [...rentalProperties].sort((a, b) => a.price - b.price);
+    setSearchResults(sortedProperties);
+  }, [setSearchResults]);
 
   return (
     <div className="min-h-screen bg-dark-900">
@@ -177,114 +188,50 @@ export default function RentPage() {
         {/* Search Section */}
         <div className="max-w-7xl mx-auto -mt-32 px-4 relative z-10">
           <div className="bg-dark-900/40 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-primary/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search location..."
-                  className="search-input"
-                  value={filters.location}
-                  onChange={handleFilterChange}
-                  name="location"
-                />
-              </div>
-              <div className="relative">
-                <FiDollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <select
-                  className="search-select"
-                  value={filters.priceRange}
-                  onChange={handleFilterChange}
-                  name="priceRange"
-                >
-                  <option value="">Monthly Rent Range</option>
-                  <option value="0-1000">$0 - $1,000</option>
-                  <option value="1000-2000">$1,000 - $2,000</option>
-                  <option value="2000-3000">$2,000 - $3,000</option>
-                  <option value="3000+">$3,000+</option>
-                </select>
-              </div>
-              <div className="relative">
-                <FiHome className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <select
-                  className="search-select"
-                  value={filters.propertyType}
-                  onChange={handleFilterChange}
-                  name="propertyType"
-                >
-                  <option value="">Property Type</option>
-                  <option value="apartment">Apartment</option>
-                  <option value="house">House</option>
-                  <option value="condo">Condo</option>
-                  <option value="studio">Studio</option>
-                </select>
-              </div>
-            </div>
-            
-            {/* Additional Filters */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <FiHome className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <select
-                  className="search-select"
-                  value={filters.beds}
-                  onChange={handleFilterChange}
-                  name="beds"
-                >
-                  <option value="">Bedrooms</option>
-                  <option value="1">1+ Bed</option>
-                  <option value="2">2+ Beds</option>
-                  <option value="3">3+ Beds</option>
-                  <option value="4">4+ Beds</option>
-                </select>
-              </div>
-              <div className="relative">
-                <FiDroplet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <select
-                  className="search-select"
-                  value={filters.baths}
-                  onChange={handleFilterChange}
-                  name="baths"
-                >
-                  <option value="">Bathrooms</option>
-                  <option value="1">1+ Bath</option>
-                  <option value="2">2+ Baths</option>
-                  <option value="3">3+ Baths</option>
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <button className="w-full bg-primary hover:bg-primary-600 text-white py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-[0_0_10px_rgba(14,165,233,0.3)]">
-                  Search Properties
-                </button>
-              </div>
-            </div>
+            <PropertySearch
+              filters={filters}
+              onFilterChange={handleFilterAndSearch}
+              onSearch={() => handleSearch(rentalProperties)}
+              onReset={handleReset}
+              type="rent"
+            />
           </div>
         </div>
 
         {/* Properties Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="bg-dark-900/40 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold text-white">
-                Available Rentals<span className="text-primary">.</span>
-              </h2>
-              <button 
-                onClick={() => navigate('/rent')}
-                className="text-primary hover:text-primary-dark transition-colors"
-              >
-                View All Properties →
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {filteredProperties.map((property) => (
-                <PropertyCard
-                  key={property.id}
-                  property={property}
-                  isFavorite={favorites.has(property.id)}
-                  onToggleFavorite={toggleFavorite}
-                />
-              ))}
-            </div>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-white">
+              Available Rentals<span className="text-primary">.</span>
+            </h2>
+            <button 
+              onClick={() => navigate('/rent')}
+              className="text-primary hover:text-primary-dark transition-colors"
+            >
+              View All Properties →
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(searchResults.length > 0 ? searchResults : rentalProperties).map((property) => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                isFavorite={favorites.has(property.id)}
+                onToggleFavorite={toggleFavorite}
+                priceDisplay="monthly"
+                displayType="For Rent"
+              />
+            ))}
+            {isSearching && (
+              <div className="col-span-3 text-center py-12">
+                <p className="text-gray-400">Searching for properties...</p>
+              </div>
+            )}
+            {!isSearching && searchResults.length === 0 && filters.location && (
+              <div className="col-span-3 text-center py-12">
+                <p className="text-gray-400">No properties found matching your search criteria.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -293,75 +240,4 @@ export default function RentPage() {
       </div>
     </div>
   );
-}
-
-const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
-  const [showContact, setShowContact] = useState(false);
-
-  return (
-    <div className="bg-dark-900/40 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl hover:shadow-primary/5 transform hover:-translate-y-1 transition-all duration-300 border border-primary/10">
-      <div className="relative h-64 overflow-hidden rounded-2xl">
-        <OptimizedImage
-          src={property.image}
-          alt={property.title}
-          width={imageSizes.card.width}
-          height={imageSizes.card.height}
-          className="w-full h-full group-hover:scale-110 transition-transform duration-300"
-        />
-        <div className="absolute top-4 left-4 bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
-          For Rent
-        </div>
-      </div>
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-xl font-bold text-white mb-2">{property.title}</h3>
-            <div className="flex items-center">
-              <p className="text-primary-400 text-2xl font-bold">${property.price}/mo</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleFavorite(property.id);
-              }}
-              className={`p-2 rounded-full transition-colors duration-200 ${
-                isFavorite ? 'bg-red-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              <FiHeart className="text-xl" />
-            </button>
-            <button 
-              onClick={() => setShowContact(!showContact)}
-              className="p-2 rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-colors duration-200"
-            >
-              <FiPhone className="text-xl" />
-            </button>
-          </div>
-        </div>
-        {showContact && (
-          <div className="mb-4 p-3 bg-primary-500/10 rounded-lg">
-            <p className="text-white font-semibold">Agent Contact:</p>
-            <p className="text-primary-400">+1 (555) 123-4567</p>
-          </div>
-        )}
-        <p className="text-gray-400 mb-4">
-          <FiMapPin className="inline-block mr-2" />
-          {property.location}
-        </p>
-        <div className="flex justify-between text-gray-400 border-t border-gray-700 pt-4">
-          <span className="flex items-center">
-            <FiHome className="mr-2" /> {property.beds} Beds
-          </span>
-          <span className="flex items-center">
-            <FiDroplet className="mr-2" /> {property.baths} Baths
-          </span>
-          <span className="flex items-center">
-            <FiMaximize className="mr-2" /> {property.sqft} sqft
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}; 
+} 

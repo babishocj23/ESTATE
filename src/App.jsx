@@ -1,70 +1,102 @@
 import { Routes, Route } from "react-router-dom";
+import { useMediaQuery } from 'react-responsive';
 import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from 'react-hot-toast';
 import Layout from "./components/Layout";
+import MobileHomePage from "./pages/MobileHomePage";
 import HomePage from "./pages/HomePage";
 import BuyPage from "./pages/BuyPage";
-import SellPage from "./pages/SellPage";
 import RentPage from "./pages/RentPage";
-import AgentsPage from "./pages/AgentsPage";
-import AboutPage from "./pages/AboutPage";
-import ContactPage from "./pages/ContactPage";
+import SellPage from "./pages/SellPage";
+import FindAgentsPage from "./pages/FindAgentsPage";
+import PropertyDetailsPage from "./pages/PropertyDetailsPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
-import VerifyCodePage from "./pages/VerifyCodePage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import PropertyDetailsPage from "./pages/PropertyDetailsPage";
-import FindAgentsPage from './pages/FindAgentsPage';
-import AllAgentsPage from './pages/AllAgentsPage';
+import ProfilePage from "./pages/ProfilePage";
+import FavoritesPage from "./pages/FavoritesPage";
+import MapPage from "./pages/MapPage";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
-import DashboardOverview from "./components/dashboard/DashboardOverview";
-import PropertyHub from "./components/dashboard/PropertyHub";
-import LeadManager from "./components/dashboard/LeadManager";
-import Analytics from "./components/dashboard/Analytics";
-import Reviews from "./components/dashboard/Reviews";
-import Communications from "./components/dashboard/Communications";
-import Settings from "./components/dashboard/Settings";
 import PrivateRoute from "./components/PrivateRoute";
+import './styles/mobile.css';
 
 function App() {
+  // Use standard breakpoint from our documentation
+  const isMobile = useMediaQuery({ maxWidth: 640 }); // sm breakpoint
+
   return (
     <AuthProvider>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 2000,
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            border: '1px solid rgba(59, 130, 246, 0.1)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <Routes>
         {/* Public Routes */}
         <Route element={<Layout />}>
-          <Route index element={<HomePage />} />
+          {/* Home Route with Mobile/Desktop Switch */}
+          <Route 
+            index 
+            element={isMobile ? <MobileHomePage /> : <HomePage />} 
+          />
+
+          {/* Property Routes */}
           <Route path="buy" element={<BuyPage />} />
           <Route path="rent" element={<RentPage />} />
           <Route path="sell" element={<SellPage />} />
           <Route path="find-agents" element={<FindAgentsPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="contact" element={<ContactPage />} />
+          <Route path="property/:id" element={<PropertyDetailsPage />} />
+          <Route path="map" element={<MapPage />} />
+
+          {/* Auth Routes */}
           <Route path="signin" element={<SignInPage />} />
           <Route path="signup" element={<SignUpPage />} />
-          <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="reset-password" element={<ResetPasswordPage />} />
-          <Route path="verify" element={<VerifyCodePage />} />
-          <Route path="property/:id" element={<PropertyDetailsPage />} />
-          <Route path="all-agents" element={<AllAgentsPage />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="favorites"
+            element={
+              <PrivateRoute>
+                <FavoritesPage />
+              </PrivateRoute>
+            }
+          />
         </Route>
 
         {/* Protected Dashboard Routes */}
         <Route
-          path="dashboard"
+          path="dashboard/*"
           element={
             <PrivateRoute>
               <DashboardLayout />
             </PrivateRoute>
           }
-        >
-          <Route index element={<DashboardOverview />} />
-          <Route path="properties" element={<PropertyHub />} />
-          <Route path="leads" element={<LeadManager />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="reviews" element={<Reviews />} />
-          <Route path="messages" element={<Communications />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
+        />
       </Routes>
     </AuthProvider>
   );

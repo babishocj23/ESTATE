@@ -143,45 +143,51 @@ const FindAgentsPage = () => {
   return (
     <div className="min-h-screen bg-dark-900">
       <div className="relative">
+        {/* Hero Section with Parallax Effect */}
         <div className="relative">
-          {/* Hero Section */}
-          <div className="relative h-[600px] bg-hero-pattern bg-cover bg-center" style={{
-            backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&q=85&w=1920&h=1080&fit=crop&auto=format")'
-          }}>
+          <div 
+            className="relative h-[400px] sm:h-[600px] bg-cover bg-center" 
+            style={{
+              backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&q=85&w=1920&h=1080&fit=crop&auto=format")'
+            }}
+          >
             <div className="absolute inset-0 bg-gradient-to-b from-dark-900/95 via-dark-900/50 to-dark-900"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-dark-900/80 via-transparent to-dark-900/80"></div>
             <div className="absolute inset-0 bg-dark-900/10 backdrop-blur-[2px]"></div>
-            <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-end pb-48">
+            <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-end pb-32">
               <div className="max-w-4xl mx-auto text-center w-full">
-                <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4">
                   Meet Our <span className="text-primary">Agents</span>
                 </h1>
-                <p className="text-xl text-gray-300 mb-4">
-                  Discover exceptional real estate professionals ready to help.
+                <p className="text-base sm:text-xl text-gray-300 mb-4">
+                  Find the perfect agent for your property needs
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Agents Section */}
-          <div className="max-w-7xl mx-auto -mt-32 px-4 relative z-10">
-            <div className="bg-dark-900/40 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-primary/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Search Section */}
+          <div className="max-w-7xl mx-auto -mt-20 px-4 relative z-10">
+            <div className="bg-dark-900/40 backdrop-blur-md p-4 sm:p-6 rounded-3xl shadow-xl border border-primary/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                {/* Search Input */}
                 <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
                     placeholder="Search location..."
-                    className="search-input"
+                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-dark-800 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 border border-gray-700"
                     value={filters.location}
                     onChange={handleFilterChange}
                     name="location"
                   />
                 </div>
+
+                {/* Specialty Filter */}
                 <div className="relative">
-                  <FiBriefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiBriefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <select
-                    className="search-select"
+                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-dark-800 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 border border-gray-700 appearance-none"
                     value={filters.specialty}
                     onChange={handleFilterChange}
                     name="specialty"
@@ -193,10 +199,12 @@ const FindAgentsPage = () => {
                     <option value="Investment">Investment Properties</option>
                   </select>
                 </div>
+
+                {/* Experience Filter */}
                 <div className="relative">
-                  <FiStar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiStar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <select
-                    className="search-select"
+                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-dark-800 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 border border-gray-700 appearance-none"
                     value={filters.experience}
                     onChange={handleFilterChange}
                     name="experience"
@@ -207,8 +215,10 @@ const FindAgentsPage = () => {
                     <option value="10+">10+ years</option>
                   </select>
                 </div>
-                <button className="bg-primary hover:bg-primary-600 text-white py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105">
-                  Search
+
+                {/* Search Button */}
+                <button className="h-12 px-6 bg-primary hover:bg-primary-600 text-white rounded-xl transition-all duration-300 text-sm font-medium">
+                  Find Agent
                 </button>
               </div>
             </div>
@@ -216,33 +226,41 @@ const FindAgentsPage = () => {
         </div>
 
         {/* Agents Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="flex justify-between items-center mb-12">
-            <h2 className="text-4xl font-bold text-white">
+        <div className="max-w-7xl mx-auto px-4 py-12 sm:py-24">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white">
               Our Agents<span className="text-primary">.</span>
             </h2>
             <button 
               onClick={() => navigate('/all-agents')}
-              className="text-primary hover:text-primary-dark transition-colors"
+              className="text-primary hover:text-primary-dark transition-colors text-sm sm:text-base"
             >
-              View All Agents →
+              View All →
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          {/* Mobile-Optimized Agent Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAgents.map((agent) => (
               <div
                 key={agent._id}
                 className="bg-dark-900/40 backdrop-blur-md border border-primary/10 rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300"
               >
-                <div className="relative h-72 overflow-hidden">
+                {/* Agent Image Section */}
+                <div className="relative h-48 sm:h-56 overflow-hidden">
                   <img
                     src={agent.profileImage}
                     alt={agent.fullName}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className="absolute top-4 left-4 bg-primary/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark-900/80 to-transparent"></div>
+                  
+                  {/* Experience Badge */}
+                  <div className="absolute top-4 left-4 bg-primary/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs">
                     {agent.experience}
                   </div>
+                  
+                  {/* Favorite Button */}
                   <button
                     onClick={() => toggleFavorite(agent._id)}
                     className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md ${
@@ -251,48 +269,57 @@ const FindAgentsPage = () => {
                         : 'bg-dark-900/60 text-gray-400 hover:bg-dark-900/80'
                     } hover:scale-110 transition-all duration-300`}
                   >
-                    <FiHeart className="w-5 h-5" />
+                    <FiHeart className="w-4 h-4" />
                   </button>
+
+                  {/* Agent Name and Title - Overlaid on Image */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-xl font-bold text-white mb-1">{agent.fullName}</h3>
+                    <p className="text-primary-400 text-sm">{agent.title}</p>
+                  </div>
                 </div>
-                <div className="p-8 bg-dark-900/40 backdrop-blur-md">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-2xl font-bold text-white mb-2">{agent.fullName}</h3>
-                      <p className="text-primary-400">{agent.title}</p>
+
+                {/* Agent Details */}
+                <div className="p-4">
+                  {/* Location and Rating */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2 text-gray-300 text-sm">
+                      <FiMapPin className="text-primary-400 w-4 h-4" />
+                      <span>{agent.location}</span>
                     </div>
                     <div className="flex items-center gap-1 text-primary">
-                      <FiStar className="w-5 h-5" />
-                      <span className="font-bold">{agent.rating}</span>
+                      <FiStar className="w-4 h-4" />
+                      <span className="font-bold text-sm">{agent.rating}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-300 text-sm mb-4">
-                    <FiMapPin className="text-primary-400" />
-                    <span>{agent.location}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mb-6">
+
+                  {/* Specialties */}
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {agent.specialties.map((specialty, index) => (
                       <span
                         key={index}
-                        className="text-xs bg-primary/10 backdrop-blur-sm text-primary-400 px-2 py-1 rounded-full"
+                        className="text-xs bg-primary/10 text-primary-400 px-2 py-1 rounded-full"
                       >
                         {specialty}
                       </span>
                     ))}
                   </div>
-                  <div className="flex gap-3">
+
+                  {/* Contact Buttons */}
+                  <div className="flex gap-2">
                     <button
                       onClick={() => togglePhone(agent._id)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-dark-900/40 backdrop-blur-md border border-primary/20 text-white py-3 rounded-xl transition-all duration-300 hover:bg-primary/10"
+                      className="flex-1 flex items-center justify-center gap-2 h-10 bg-dark-800/40 backdrop-blur-md border border-primary/20 text-white rounded-xl transition-all duration-300 hover:bg-primary/10 text-sm"
                     >
-                      <FiPhone />
+                      <FiPhone className="w-4 h-4" />
                       {showPhone.has(agent._id) ? agent.phone : 'Call'}
                     </button>
                     <button
                       onClick={() => window.open(`https://t.me/${agent.telegram}`, '_blank', 'noopener noreferrer')}
-                      className="flex-1 flex items-center justify-center gap-2 bg-dark-900/40 backdrop-blur-md border border-primary/20 text-white py-3 rounded-xl transition-all duration-300 hover:bg-primary/10"
+                      className="flex-1 flex items-center justify-center gap-2 h-10 bg-dark-800/40 backdrop-blur-md border border-primary/20 text-white rounded-xl transition-all duration-300 hover:bg-primary/10 text-sm"
                     >
-                      <FiSend />
-                      Telegram
+                      <FiSend className="w-4 h-4" />
+                      Message
                     </button>
                   </div>
                 </div>

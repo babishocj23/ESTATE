@@ -1,0 +1,106 @@
+/* Mobile Layout Specific Styles */
+.mobile-layout {
+  background-color: white;
+  color: #1a1a1a;
+}
+
+.mobile-layout .mobile-main {
+  background-color: white;
+}
+
+/* Mobile-specific styles */
+.mobile-layout .no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.mobile-layout .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile animations */
+.mobile-layout .slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile shadows */
+.mobile-layout .shadow-soft {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile property card effects */
+.mobile-layout .property-card-hover {
+  transition: transform 0.2s ease-in-out;
+}
+
+.mobile-layout .property-card-hover:active {
+  transform: scale(0.98);
+}
+
+/* Mobile gradients */
+.mobile-layout .gradient-overlay {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+/* Mobile navigation styles */
+.mobile-layout .bottom-nav-shadow {
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Mobile tab indicators */
+.mobile-layout .tab-indicator {
+  position: relative;
+}
+
+.mobile-layout .tab-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+}
+
+/* Mobile smooth scroll */
+.mobile-layout .smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile status badges */
+.mobile-layout .status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mobile-layout .status-badge.featured {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Mobile property details animation */
+.mobile-layout .details-expand {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.mobile-layout .details-expand.open {
+  max-height: 500px;
+} 
