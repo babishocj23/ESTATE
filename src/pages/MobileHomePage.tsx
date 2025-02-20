@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiSearch, FiSliders, FiHeart, FiUser, FiMapPin, FiMaximize } from 'react-icons/fi';
+import { FiSearch, FiSliders, FiHeart, FiUser, FiMapPin, FiMaximize, FiMail, FiArrowRight } from 'react-icons/fi';
 import { BiBed } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -573,6 +573,80 @@ const MobileHomePage: React.FC = () => {
           </div>
         </div>
 
+        {/* Rental Properties Section */}
+        <div className="px-4 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-white">Rental Properties</h2>
+            <button 
+              className="text-gray-300 text-sm"
+              onClick={() => navigate('/rent')}
+            >
+              View All
+            </button>
+          </div>
+          <div className="flex overflow-x-auto gap-4 no-scrollbar pb-4">
+            {rentProperties.slice(0, 5).map((property) => (
+              <div
+                key={property.id}
+                className="relative min-w-[280px] bg-dark-800/40 backdrop-blur-md rounded-2xl overflow-hidden border border-gray-700/50 flex-shrink-0"
+                onClick={() => navigate(`/property/${property.id}`)}
+              >
+                <div className="relative h-36">
+                  <img
+                    src={property.image}
+                    alt={property.title}
+                    className="w-full h-full object-cover"
+                  />
+                  {property.discount && (
+                    <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
+                      Save ${property.discount}
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-white line-clamp-1">
+                      {property.title}
+                    </h3>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleFavorite(property.id);
+                      }}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        favorites.has(property.id)
+                          ? 'bg-red-500 text-white'
+                          : 'bg-primary/20 text-primary'
+                      }`}
+                    >
+                      <FiHeart className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-400 flex items-center gap-1 mb-2">
+                    <FiMapPin className="w-3.5 h-3.5" />
+                    <span className="line-clamp-1">{property.location}</span>
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-primary font-semibold">
+                      ${property.price}/mo
+                    </span>
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <BiBed className="w-3.5 h-3.5" />
+                        {property.beds}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <FiMaximize className="w-3.5 h-3.5" />
+                        {property.sqft}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Search Results or Default Content */}
         {isSearching ? (
           <div className="px-4 py-8 text-center">
@@ -620,10 +694,48 @@ const MobileHomePage: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
 
-      {/* Mobile Navigation */}
-      <MobileNavBar />
+        {/* Newsletter Section - Mobile Optimized */}
+        <div className="px-4 py-6 mb-16">
+          <div className="bg-dark-900/40 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-primary/10">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  Stay Updated<span className="text-primary">.</span>
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Subscribe to our newsletter for exclusive property listings and market insights
+                </p>
+              </div>
+              <div className="relative">
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  // Handle newsletter subscription
+                }} className="flex flex-col gap-3">
+                  <div className="flex-grow relative">
+                    <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      className="w-full pl-11 pr-4 py-3 bg-dark-900/50 backdrop-blur-md border border-primary/10 rounded-xl focus:ring-2 focus:ring-primary text-white placeholder-gray-400 hover:border-primary/20 transition-colors text-sm"
+                      required
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-600 text-white transition-all duration-300 active:scale-95 touch-manipulation group text-sm"
+                  >
+                    Subscribe
+                    <FiArrowRight className="transform group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <MobileNavBar />
+      </div>
     </div>
   );
 };

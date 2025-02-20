@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { FiSearch, FiPhone, FiHeart, FiBriefcase, FiStar, FiMapPin, FiSend } from 'react-icons/fi';
+import { FiSearch, FiPhone, FiHeart, FiBriefcase, FiStar, FiMapPin, FiSend, FiFilter, FiMail, FiArrowRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
 import Hero from '../components/Hero';
 import Newsletter from '../components/Newsletter';
 
@@ -88,13 +89,16 @@ const staticAgents = [
 
 const FindAgentsPage = () => {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery({ maxWidth: 640 });
   const [filters, setFilters] = useState({
     location: '',
     specialty: '',
-    experience: ''
+    experience: '',
+    area: ''
   });
   const [favoriteAgents, setFavoriteAgents] = useState(new Set());
   const [showPhone, setShowPhone] = useState(new Set());
+  const [showFilters, setShowFilters] = useState(false);
 
   const toggleFavorite = (agentId) => {
     setFavoriteAgents(prev => {
@@ -129,7 +133,13 @@ const FindAgentsPage = () => {
   };
 
   const filteredAgents = staticAgents.filter(agent => {
-    if (filters.location && !agent.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
+    const searchTerm = filters.location.toLowerCase();
+    const matchesSearch = 
+      agent.location.toLowerCase().includes(searchTerm) ||
+      agent.fullName.toLowerCase().includes(searchTerm) ||
+      agent.phone.replace(/\D/g, '').includes(searchTerm.replace(/\D/g, ''));
+    
+    if (filters.location && !matchesSearch) return false;
     if (filters.specialty && !agent.specialties.some(s => s.toLowerCase().includes(filters.specialty.toLowerCase()))) return false;
     if (filters.experience) {
       const years = parseInt(agent.experience);
@@ -140,197 +150,400 @@ const FindAgentsPage = () => {
     return true;
   });
 
-  return (
-    <div className="min-h-screen bg-dark-900">
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission
+  };
+
+  // Desktop version
+  const DesktopVersion = () => (
+    <>
+      {/* Hero Section */}
+      <div className="relative h-[600px] bg-cover bg-center" style={{
+        backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&q=85&w=1920&h=1080&fit=crop&auto=format")'
+      }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-900/50 via-dark-900/70 to-dark-900"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-dark-900/80 via-transparent to-dark-900/80"></div>
+        <div className="absolute inset-0 bg-dark-900/10 backdrop-blur-[2px]"></div>
+        <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-end pb-48">
+          <div className="max-w-4xl mx-auto text-center w-full">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+              Meet Our <span className="text-primary">Agents</span>
+            </h1>
+            <p className="text-xl text-gray-300 mb-4">
+              Find the perfect agent for your property needs
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Section */}
+      <div className="max-w-7xl mx-auto -mt-32 px-4 relative z-10">
+        <div className="bg-dark-900/40 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-primary/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="relative">
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search agents..."
+                value={filters.location}
+                onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                className="w-full pl-12 pr-4 py-3 bg-dark-800 rounded-xl border border-gray-700 focus:outline-none focus:border-primary"
+              />
+            </div>
+            <select
+              value={filters.specialty}
+              onChange={(e) => setFilters(prev => ({ ...prev, specialty: e.target.value }))}
+              className="w-full px-4 py-3 bg-dark-800 rounded-xl border border-gray-700 focus:outline-none focus:border-primary"
+            >
+              <option value="">All Specialties</option>
+              <option value="Luxury Homes">Luxury Homes</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Residential">Residential</option>
+              <option value="Investment">Investment</option>
+            </select>
+            <select
+              value={filters.area}
+              onChange={(e) => setFilters(prev => ({ ...prev, area: e.target.value }))}
+              className="w-full px-4 py-3 bg-dark-800 rounded-xl border border-gray-700 focus:outline-none focus:border-primary"
+            >
+              <option value="">All Locations</option>
+              <option value="Beverly Hills">Beverly Hills</option>
+              <option value="Los Angeles">Los Angeles</option>
+              <option value="Santa Monica">Santa Monica</option>
+              <option value="Malibu">Malibu</option>
+              <option value="Downtown LA">Downtown LA</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Agents Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            Featured Agents<span className="text-primary">.</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {staticAgents.slice(0, 3).map((agent) => (
+            <div
+              key={agent._id}
+              className="bg-dark-900/40 backdrop-blur-md rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300 border border-primary/10"
+            >
+              <div className="aspect-square relative">
+                <img
+                  src={agent.profileImage}
+                  alt={agent.fullName}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-dark-900/90 to-transparent p-6">
+                  <h3 className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(255,255,255,0.3)]">{agent.fullName}</h3>
+                  <p className="text-primary-400">{agent.title}</p>
+                </div>
+                <button
+                  onClick={() => toggleFavorite(agent._id)}
+                  className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md ${
+                    favoriteAgents.has(agent._id)
+                      ? 'bg-red-500/90 text-white'
+                      : 'bg-dark-900/50 text-gray-400'
+                  } hover:scale-110 transition-all duration-300`}
+                >
+                  <FiHeart className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 bg-dark-900/40 backdrop-blur-md border-t border-primary/5">
+                <div className="flex items-center gap-2 text-gray-400 mb-4">
+                  <FiMapPin className="w-4 h-4" />
+                  <span>{agent.location}</span>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {agent.specialties.map((specialty, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                    >
+                      {specialty}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between text-gray-400 mb-6">
+                  <span className="flex items-center gap-1">
+                    <FiBriefcase className="w-4 h-4" />
+                    {agent.experience}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <FiStar className="w-4 h-4 text-yellow-500" />
+                    {agent.rating}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => togglePhone(agent._id)}
+                    className="flex items-center justify-center gap-2 py-2 bg-primary/10 rounded-xl text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <FiPhone className="w-4 h-4" />
+                    {showPhone.has(agent._id) ? agent.phone : 'Call'}
+                  </button>
+                  <button
+                    onClick={() => window.open(`https://t.me/${agent.telegram}`, '_blank')}
+                    className="flex items-center justify-center gap-2 py-2 bg-primary/10 rounded-xl text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <FiSend className="w-4 h-4" />
+                    Message
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* All Agents Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            All Agents<span className="text-primary">.</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredAgents.map((agent) => (
+            <div
+              key={agent._id}
+              className="bg-dark-900/40 backdrop-blur-md rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300 border border-primary/10"
+            >
+              <div className="aspect-square relative">
+                <img
+                  src={agent.profileImage}
+                  alt={agent.fullName}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-dark-900/90 to-transparent p-6">
+                  <h3 className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(255,255,255,0.3)]">{agent.fullName}</h3>
+                  <p className="text-primary-400">{agent.title}</p>
+                </div>
+                <button
+                  onClick={() => toggleFavorite(agent._id)}
+                  className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md ${
+                    favoriteAgents.has(agent._id)
+                      ? 'bg-red-500/90 text-white'
+                      : 'bg-dark-900/50 text-gray-400'
+                  } hover:scale-110 transition-all duration-300`}
+                >
+                  <FiHeart className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 bg-dark-900/40 backdrop-blur-md border-t border-primary/5">
+                <div className="flex items-center gap-2 text-gray-400 mb-4">
+                  <FiMapPin className="w-4 h-4" />
+                  <span>{agent.location}</span>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {agent.specialties.map((specialty, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                    >
+                      {specialty}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between text-gray-400 mb-6">
+                  <span className="flex items-center gap-1">
+                    <FiBriefcase className="w-4 h-4" />
+                    {agent.experience}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <FiStar className="w-4 h-4 text-yellow-500" />
+                    {agent.rating}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => togglePhone(agent._id)}
+                    className="flex items-center justify-center gap-2 py-2 bg-primary/10 rounded-xl text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <FiPhone className="w-4 h-4" />
+                    {showPhone.has(agent._id) ? agent.phone : 'Call'}
+                  </button>
+                  <button
+                    onClick={() => window.open(`https://t.me/${agent.telegram}`, '_blank')}
+                    className="flex items-center justify-center gap-2 py-2 bg-primary/10 rounded-xl text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <FiSend className="w-4 h-4" />
+                    Message
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Newsletter />
+    </>
+  );
+
+  // Mobile version
+  const MobileVersion = () => (
+    <>
       <div className="relative">
-        {/* Hero Section with Parallax Effect */}
+        {/* Hero Section */}
         <div className="relative">
           <div 
-            className="relative h-[400px] sm:h-[600px] bg-cover bg-center" 
+            className="relative h-[300px] bg-cover bg-center" 
             style={{
-              backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&q=85&w=1920&h=1080&fit=crop&auto=format")'
+            backgroundImage: 'url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&q=85&w=1920&h=1080&fit=crop&auto=format")'
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-dark-900/95 via-dark-900/50 to-dark-900"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-dark-900/80 via-transparent to-dark-900/80"></div>
             <div className="absolute inset-0 bg-dark-900/10 backdrop-blur-[2px]"></div>
-            <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-end pb-32">
+            <div className="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-end pb-24">
               <div className="max-w-4xl mx-auto text-center w-full">
-                <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4">
+                <h1 className="text-2xl font-bold text-white mb-2">
                   Meet Our <span className="text-primary">Agents</span>
                 </h1>
-                <p className="text-base sm:text-xl text-gray-300 mb-4">
+                <p className="text-sm text-gray-300">
                   Find the perfect agent for your property needs
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Search Section */}
-          <div className="max-w-7xl mx-auto -mt-20 px-4 relative z-10">
-            <div className="bg-dark-900/40 backdrop-blur-md p-4 sm:p-6 rounded-3xl shadow-xl border border-primary/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                {/* Search Input */}
-                <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          {/* Mobile Search Section */}
+          <div className="max-w-7xl mx-auto -mt-16 px-4 relative z-10">
+            <div className="bg-dark-900/40 backdrop-blur-md p-4 rounded-3xl shadow-xl border border-primary/10">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
-                    placeholder="Search location..."
-                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-dark-800 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 border border-gray-700"
+                    placeholder="Search by name, location..."
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl bg-dark-800 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 border border-gray-700"
                     value={filters.location}
-                    onChange={handleFilterChange}
-                    name="location"
+                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
                   />
                 </div>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`w-11 h-11 rounded-2xl border-2 transition-all duration-300 flex items-center justify-center ${
+                    showFilters ? 'border-primary bg-primary/10 text-white' : 'border-gray-700 text-gray-400'
+                  }`}
+                >
+                  <FiFilter className="w-4 h-4" />
+                </button>
+              </div>
 
-                {/* Specialty Filter */}
-                <div className="relative">
-                  <FiBriefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              {showFilters && (
+                <div className="mt-2 bg-dark-800/50 backdrop-blur-sm rounded-xl p-3 grid grid-cols-2 gap-2">
                   <select
-                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-dark-800 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 border border-gray-700 appearance-none"
+                    className="h-9 px-2 rounded-lg bg-dark-800 text-white text-xs border border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20"
                     value={filters.specialty}
-                    onChange={handleFilterChange}
-                    name="specialty"
+                    onChange={(e) => setFilters(prev => ({ ...prev, specialty: e.target.value }))}
                   >
-                    <option value="">Specialty</option>
+                    <option value="">All Specialties</option>
                     <option value="Luxury Homes">Luxury Homes</option>
                     <option value="Commercial">Commercial</option>
                     <option value="Residential">Residential</option>
-                    <option value="Investment">Investment Properties</option>
+                    <option value="Investment">Investment</option>
                   </select>
-                </div>
 
-                {/* Experience Filter */}
-                <div className="relative">
-                  <FiStar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <select
-                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-dark-800 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 border border-gray-700 appearance-none"
-                    value={filters.experience}
-                    onChange={handleFilterChange}
-                    name="experience"
+                    className="h-9 px-2 rounded-lg bg-dark-800 text-white text-xs border border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    value={filters.area}
+                    onChange={(e) => setFilters(prev => ({ ...prev, area: e.target.value }))}
                   >
-                    <option value="">Experience</option>
-                    <option value="0-5">0-5 years</option>
-                    <option value="5-10">5-10 years</option>
-                    <option value="10+">10+ years</option>
+                    <option value="">All Locations</option>
+                    <option value="Beverly Hills">Beverly Hills</option>
+                    <option value="Los Angeles">Los Angeles</option>
+                    <option value="Santa Monica">Santa Monica</option>
+                    <option value="Malibu">Malibu</option>
+                    <option value="Downtown LA">Downtown LA</option>
                   </select>
                 </div>
-
-                {/* Search Button */}
-                <button className="h-12 px-6 bg-primary hover:bg-primary-600 text-white rounded-xl transition-all duration-300 text-sm font-medium">
-                  Find Agent
-                </button>
-              </div>
-            </div>
+              )}
           </div>
         </div>
 
-        {/* Agents Grid */}
-        <div className="max-w-7xl mx-auto px-4 py-12 sm:py-24">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white">
-              Our Agents<span className="text-primary">.</span>
-            </h2>
-            <button 
-              onClick={() => navigate('/all-agents')}
-              className="text-primary hover:text-primary-dark transition-colors text-sm sm:text-base"
-            >
-              View All →
-            </button>
-          </div>
-
-          {/* Mobile-Optimized Agent Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Mobile Agents Grid */}
+          <div className="mt-6 px-4">
+            <div className="grid grid-cols-1 gap-4">
             {filteredAgents.map((agent) => (
               <div
                 key={agent._id}
-                className="bg-dark-900/40 backdrop-blur-md border border-primary/10 rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300"
+                  className="bg-dark-900/40 backdrop-blur-md border border-primary/5 rounded-2xl overflow-hidden"
               >
-                {/* Agent Image Section */}
-                <div className="relative h-48 sm:h-56 overflow-hidden">
+                  <div className="p-4 flex items-start gap-3">
+                    <div className="relative w-16 h-16 flex-shrink-0">
                   <img
                     src={agent.profileImage}
                     alt={agent.fullName}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-dark-900/80 to-transparent"></div>
-                  
-                  {/* Experience Badge */}
-                  <div className="absolute top-4 left-4 bg-primary/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs">
-                    {agent.experience}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                      <div className="absolute -bottom-1 -right-1 bg-primary text-white text-xs px-1.5 py-0.5 rounded-md">
+                        {agent.rating}★
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-semibold truncate">{agent.fullName}</h3>
+                      <p className="text-primary-400 text-sm mb-1">{agent.title}</p>
+                      <p className="text-gray-400 text-sm flex items-center gap-1">
+                        <FiMapPin className="w-3 h-3 flex-shrink-0" />
+                        <span className="truncate">{agent.location}</span>
+                      </p>
                   </div>
-                  
-                  {/* Favorite Button */}
                   <button
                     onClick={() => toggleFavorite(agent._id)}
-                    className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       favoriteAgents.has(agent._id)
                         ? 'bg-red-500 text-white'
-                        : 'bg-dark-900/60 text-gray-400 hover:bg-dark-900/80'
-                    } hover:scale-110 transition-all duration-300`}
+                          : 'bg-dark-800 text-gray-400'
+                      }`}
                   >
-                    <FiHeart className="w-4 h-4" />
+                      <FiHeart className="w-4 h-4" />
                   </button>
-
-                  {/* Agent Name and Title - Overlaid on Image */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-xl font-bold text-white mb-1">{agent.fullName}</h3>
-                    <p className="text-primary-400 text-sm">{agent.title}</p>
                   </div>
-                </div>
-
-                {/* Agent Details */}
-                <div className="p-4">
-                  {/* Location and Rating */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-gray-300 text-sm">
-                      <FiMapPin className="text-primary-400 w-4 h-4" />
-                      <span>{agent.location}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-primary">
-                      <FiStar className="w-4 h-4" />
-                      <span className="font-bold text-sm">{agent.rating}</span>
-                    </div>
-                  </div>
-
-                  {/* Specialties */}
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="px-4 pb-2">
+                    <div className="flex flex-wrap gap-1">
                     {agent.specialties.map((specialty, index) => (
                       <span
                         key={index}
-                        className="text-xs bg-primary/10 text-primary-400 px-2 py-1 rounded-full"
+                          className="text-xs bg-primary/10 text-primary-400 px-2 py-0.5 rounded-full"
                       >
                         {specialty}
                       </span>
                     ))}
                   </div>
-
-                  {/* Contact Buttons */}
-                  <div className="flex gap-2">
+                  </div>
+                  <div className="grid grid-cols-2 divide-x divide-gray-700/50 border-t border-gray-700/50">
                     <button
                       onClick={() => togglePhone(agent._id)}
-                      className="flex-1 flex items-center justify-center gap-2 h-10 bg-dark-800/40 backdrop-blur-md border border-primary/20 text-white rounded-xl transition-all duration-300 hover:bg-primary/10 text-sm"
+                      className="flex items-center justify-center gap-2 py-3 text-sm text-white hover:bg-dark-800/40"
                     >
                       <FiPhone className="w-4 h-4" />
                       {showPhone.has(agent._id) ? agent.phone : 'Call'}
                     </button>
                     <button
-                      onClick={() => window.open(`https://t.me/${agent.telegram}`, '_blank', 'noopener noreferrer')}
-                      className="flex-1 flex items-center justify-center gap-2 h-10 bg-dark-800/40 backdrop-blur-md border border-primary/20 text-white rounded-xl transition-all duration-300 hover:bg-primary/10 text-sm"
+                      onClick={() => window.open(`https://t.me/${agent.telegram}`, '_blank')}
+                      className="flex items-center justify-center gap-2 py-3 text-sm text-white hover:bg-dark-800/40"
                     >
                       <FiSend className="w-4 h-4" />
                       Message
                     </button>
                   </div>
                 </div>
+              ))}
               </div>
-            ))}
           </div>
         </div>
-
-        {/* Newsletter Section */}
-        <Newsletter />
       </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-dark-900">
+      {isMobile ? <MobileVersion /> : <DesktopVersion />}
     </div>
   );
 };
