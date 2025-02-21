@@ -1,18 +1,40 @@
-plugins = []
-headers = []
-redirects = []
+headersOrigin = "config"
+redirectsOrigin = "config"
+functionsDirectory = "/Users/dear/Documents/Estate/netlify/functions"
+functionsDirectoryOrigin = "config"
+
+[dev]
+framework = "#custom"
+command = "npm run dev"
+targetPort = 3000.0
+port = 8888.0
+publish = "dist"
 
 [functions]
 
 [functions."*"]
 
+[[plugins]]
+origin = "config"
+package = "@netlify/plugin-lighthouse"
+
+[plugins.inputs]
+
+[[plugins]]
+origin = "config"
+package = "netlify-plugin-submit-sitemap"
+
+[plugins.inputs]
+
 [build]
-publish = "/Users/dear/rr/redlynx/frontend/dist"
-publishOrigin = "ui"
-commandOrigin = "ui"
+publish = "/Users/dear/Documents/Estate/dist"
+publishOrigin = "config"
+commandOrigin = "config"
 command = "npm run build"
+functions = "/Users/dear/Documents/Estate/netlify/functions"
 
 [build.environment]
+NODE_VERSION = "18"
 
 [build.processing]
 
@@ -25,3 +47,32 @@ command = "npm run build"
 [build.processing.js]
 
 [build.services]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "DENY"
+X-XSS-Protection = "1; mode=block"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Content-Security-Policy = "default-src 'self' https://*.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.unsplash.com https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co;"
+Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+[[headers]]
+for = "/assets/*"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
